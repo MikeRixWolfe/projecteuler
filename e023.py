@@ -1,24 +1,41 @@
 from e021 import d_sum
 
+abundants = []
+
+def divisors(n):
+    yield 1
+    for i in xrange(2, long(n**.5)+1):
+        if n % i == 0:
+            yield i
+            if i != n/i:
+                yield n/i
+
+
+def is_abundant(n):
+    return sum(divisors(n)) > n
+
+
+def is_abundant_sum(n):
+    abundants_set = set(abundants)
+    for i in abundants:
+        if i > n:
+            return False
+        if (n - i) in abundants_set:
+            return True
+    return False
 
 def non_abundant_sums(n):
-    a = []
-    s = 0
-    for i in xrange(n):
-        if i < d_sum(i):
-            if i not in a:
-                a.append(i)
-            for x in a:
-                if x+i not in a:
-                    a.append(x+i)
-        if i not in a:
-            s += i
-    return s
+    global abundants
+    abundants = [x for x in xrange(1, n+1) if is_abundant(x)]
+
+    for i in xrange(1, n+1):
+        if not is_abundant_sum(i):
+            yield i
 
 
 if __name__ == "__main__":
     from time import time
 
     start = time()
-    #print non_abundant_sums(28123)
+    print sum(non_abundant_sums(28123))
     print "Time: {}".format(time() - start)
